@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Precios - Disponibles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            text-align: center;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #ffffff;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            color: #4a4a4a;
+        }
+        .category {
+            display: flex;
+            align-items: center;
+        }
+        .category span {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .occidental-baja { background-color: #b0e57c; }
+        .occidental-alta { background-color: #c69cff; }
+        .oriental-alta { background-color: #f9b5c3; }
+        .oriental-baja { background-color: #9cd8df; }
+        .norte-alta { background-color: #f7e77d; }
+        .norte-baja { background-color: #a6e5a6; }
+        .sur-alta { background-color: #f3c394; }
+        .sur-baja { background-color: #f4b6c2; }
+        .total-row {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        input[type="number"] {
+            width: 50px;
+            text-align: center;
+            border: none;
+            border-bottom: 2px solid #ddd; /* Borde solo en la parte inferior */
+            outline: none;
+        }
+        .agotado {
+            color: red;
+            font-weight: bold;
+        }
+        .add-to-cart {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #ccc;
+            color: #fff;
+            border: none;
+            cursor: not-allowed;
+        }
+        .add-to-cart.enabled {
+            background-color: #FFA500; /* Naranja */
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Categoría de asiento</th>
+                <th>Cantidad</th>
+                <th>Precio unitario</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="category"><span class="occidental-baja"></span>OCCIDENTAL BAJA</td>
+                <td class="agotado">Agotado</td>
+                <td>$641.700</td>
+                <td class="subtotal">$0</td>
+            </tr>
+            <tr>
+                <td class="category"><span class="occidental-alta"></span>OCCIDENTAL ALTA</td>
+                <td class="agotado">Agotado</td>
+                <td>$641.700</td>
+                <td class="subtotal">$0</td>
+            </tr>
+            <tr>
+                <td class="category"><span class="oriental-alta"></span>ORIENTAL ALTA</td>
+                <td><input type="number" min="0" max="4" value="0" class="cantidad" data-precio="396700"></td>
+                <td>$396.700</td>
+                <td class="subtotal">$0</td>
+            </tr>
+            <tr>
+                <td class="category"><span class="oriental-baja"></span>ORIENTAL BAJA</td>
+                <td><input type="number" min="0" max="4" value="0" class="cantidad" data-precio="373400"></td>
+                <td>$373.400</td>
+                <td class="subtotal">$0</td>
+            </tr>
+            <tr>
+                <td class="category"><span class="norte-alta"></span>NORTE ALTA</td>
+                <td><input type="number" min="0" max="4" value="0" class="cantidad" data-precio="93400"></td>
+                <td>$93.400</td>
+                <td class="subtotal">$0</td>
+            </tr>
+            <tr>
+                <td class="category"><span class="norte-baja"></span>NORTE BAJA</td>
+                <td class="agotado">Agotado</td>
+                <td>$93.400</td>
+                <td class="subtotal">$0</td>
+            </tr>
+            <tr>
+                <td class="category"><span class="sur-alta"></span>SUR ALTA</td>
+                <td class="agotado">Agotado</td>
+                <td>$93.400</td>
+                <td class="subtotal">$0</td>
+            </tr>
+            <tr>
+                <td class="category"><span class="sur-baja"></span>SUR BAJA</td>
+                <td class="agotado">Agotado</td>
+                <td>$93.400</td>
+                <td class="subtotal">$0</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td colspan="3">Total</td>
+                <td id="total">$0</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <button class="add-to-cart" disabled>AÑADE A LA CESTA</button>
+
+    <script>
+        document.querySelectorAll('.cantidad').forEach(input => {
+            input.addEventListener('input', handleInput);
+        });
+
+        function handleInput() {
+            let totalBoletos = 0;
+            document.querySelectorAll('.cantidad').forEach(input => {
+                totalBoletos += parseInt(input.value);
+            });
+
+            if (totalBoletos > 4) {
+                // Evita que se seleccione más de 4 boletos en total.
+                this.value = this.dataset.previousValue || 0;
+            } else {
+                this.dataset.previousValue = this.value;
+                updateTotals();
+            }
+        }
+
+        function updateTotals() {
+            let total = 0;
+            let totalBoletos = 0;
+
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const cantidadInput = row.querySelector('.cantidad');
+                if (cantidadInput) {
+                    const precioUnitario = parseInt(cantidadInput.dataset.precio);
+                    const cantidad = parseInt(cantidadInput.value);
+
+                    const subtotal = precioUnitario * cantidad;
+                    row.querySelector('.subtotal').textContent = `$${subtotal.toLocaleString()}`;
+
+                    total += subtotal;
+                    totalBoletos += cantidad;
+                }
+            });
+
+            document.getElementById('total').textContent = `$${total.toLocaleString()}`;
+
+            // Habilitar o deshabilitar el botón "Añade a la cesta" según el total de boletos seleccionados.
+            const addToCartButton = document.querySelector('.add-to-cart');
+            if (totalBoletos > 0 && totalBoletos <= 4) {
+                addToCartButton.disabled = false;
+                addToCartButton.classList.add('enabled');
+            } else {
+                addToCartButton.disabled = true;
+                addToCartButton.classList.remove('enabled');
+            }
+        }
+    </script>
+
+</body>
+</html>
