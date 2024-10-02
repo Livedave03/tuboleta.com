@@ -3260,5 +3260,23 @@
 		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
 	}
 	// ]]>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Selecciona todas las categorías y precios
+        const categories = document.querySelectorAll('.category, .price');
+    
+        // Agrega el evento de clic a cada categoría y precio
+        categories.forEach(element => {
+            element.addEventListener('click', function() {
+                // Encuentra el input asociado y enfócalo
+                const input = element.closest('.ticket-item').querySelector('.ticket-input');
+                if (input) {
+                    input.focus(); // Enfoca el input
+                }
+            });
+        });
+    });
+    
 </script>
+
 </body></html>"></iframe></div><!-- Code inje--><div class="ue-sidebar-container"><iframe srcdoc="<!DOCTYPE html><html><head></head><body><div class=&quot;frame-root&quot;></div></body></html>"></iframe></div></body></html>
